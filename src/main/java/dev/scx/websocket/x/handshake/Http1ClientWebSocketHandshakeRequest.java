@@ -1,4 +1,4 @@
-package dev.scx.websocket.x;
+package dev.scx.websocket.x.handshake;
 
 import dev.scx.exception.ScxWrappedException;
 import dev.scx.http.sender.IllegalSenderStateException;
@@ -9,8 +9,9 @@ import dev.scx.http.uri.ScxURIWritable;
 import dev.scx.http.x.HttpClientRequest;
 import dev.scx.http.x.http1.Http1ClientResponse;
 import dev.scx.http.x.http1.headers.Http1Headers;
-import dev.scx.websocket.ScxClientWebSocketHandshakeRequest;
-import dev.scx.websocket.ScxClientWebSocketHandshakeResponse;
+import dev.scx.websocket.handshake.ScxClientWebSocketHandshakeRequest;
+import dev.scx.websocket.handshake.ScxClientWebSocketHandshakeResponse;
+import dev.scx.websocket.x.WebSocketOptions;
 
 import java.util.Base64;
 
@@ -51,7 +52,7 @@ public class Http1ClientWebSocketHandshakeRequest implements ScxClientWebSocketH
     }
 
     @Override
-    public ScxClientWebSocketHandshakeResponse sendHandshake() throws IllegalSenderStateException, ScxHttpSendException, ScxWrappedException, ScxHttpReceiveException {
+    public ScxClientWebSocketHandshakeResponse handshake() throws IllegalSenderStateException, ScxHttpSendException, ScxWrappedException, ScxHttpReceiveException {
         //1, 创建 secWebsocketKey
         var secWebsocketKey = Base64.getEncoder().encodeToString(randomBytes(16));
         this._request.headers().connection(UPGRADE);

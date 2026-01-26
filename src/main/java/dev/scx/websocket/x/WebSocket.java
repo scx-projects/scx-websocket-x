@@ -5,7 +5,7 @@ import dev.scx.io.exception.NoMoreDataException;
 import dev.scx.websocket.ScxWebSocket;
 import dev.scx.websocket.WebSocketFrame;
 import dev.scx.websocket.close_info.ScxWebSocketCloseInfo;
-import dev.scx.websocket.exception.WebSocketParseException;
+import dev.scx.websocket.exception.WebSocketException;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -39,7 +39,7 @@ public class WebSocket implements ScxWebSocket {
     }
 
     @Override
-    public WebSocketFrame readFrame() throws WebSocketParseException {
+    public WebSocketFrame readFrame() throws WebSocketException {
         try {
             var protocolFrame = readProtocolFrame();
             //当我们接收到了 close 帧 我们应该发送 close 帧并关闭
@@ -48,19 +48,19 @@ public class WebSocket implements ScxWebSocket {
             }
             return WebSocketFrame.of(protocolFrame.opCode(), protocolFrame.payloadData(), protocolFrame.fin());
         } catch (NoMoreDataException e) {
-            throw new WebSocketParseException(NORMAL_CLOSE.code(), NORMAL_CLOSE.reason());
+            throw new WebSocketException(NORMAL_CLOSE.code()+ NORMAL_CLOSE.reason());
         }
     }
 
     @Override
-    public ScxWebSocket sendFrame(WebSocketFrame frame) {
-        if (isClosed()) {
+    public void sendFrame(WebSocketFrame frame) {
+        if (socketIO.tcpSocket.isClosed()) {
             throw new IllegalStateException("Cannot send frame: WebSocket is already closed");
         }
 
         if (closeSent) {
             if (frame.opCode() == CLOSE) { // 允许 用户多次发送 close 我们直接忽略
-                return this;
+                return;
             } else {// 其余则抛出异常
                 throw new IllegalStateException("Cannot send non-close frames after a Close frame has been sent");
             }
@@ -77,23 +77,11 @@ public class WebSocket implements ScxWebSocket {
         if (frame.opCode() == CLOSE) {
             closeSent = true;
         }
-
-        return this;
-    }
-
-    @Override
-    public boolean closeSent() {
-        return closeSent;
     }
 
     @Override
     public void close() {
         socketIO.closeQuietly();  // 这里有可能已经被远端关闭 我们忽略异常
-    }
-
-    @Override
-    public boolean isClosed() {
-        return socketIO.tcpSocket.isClosed();
     }
 
     private WebSocketProtocolFrame createProtocolFrame(WebSocketFrame frame) {
@@ -115,7 +103,7 @@ public class WebSocket implements ScxWebSocket {
         }
     }
 
-    private WebSocketProtocolFrame readProtocolFrame() throws NoMoreDataException, WebSocketParseException {
+    private WebSocketProtocolFrame readProtocolFrame() throws NoMoreDataException, WebSocketException {
         if (options.mergeWebSocketFrame()) {
             return WebSocketProtocolFrameHelper.readFrameUntilLast(socketIO.in, options.maxWebSocketFrameSize(), options.maxWebSocketMessageSize());
         } else {

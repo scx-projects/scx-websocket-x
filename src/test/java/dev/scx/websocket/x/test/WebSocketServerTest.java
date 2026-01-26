@@ -2,8 +2,8 @@ package dev.scx.websocket.x.test;
 
 import dev.scx.http.x.HttpServer;
 import dev.scx.http.x.HttpServerOptions;
-import dev.scx.websocket.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.event.ScxEventWebSocket;
+import dev.scx.websocket.handshake.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.x.WebSocketClient;
 import dev.scx.websocket.x.WebSocketUpgradeRequestFactory;
 
@@ -32,7 +32,7 @@ public class WebSocketServerTest {
             sleep(1);
             Thread.ofVirtual().start(() -> {
                 try {
-                    var scxWebSocket = new WebSocketClient().webSocketHandshakeRequest().uri("ws://localhost:8080/websocket").webSocket();
+                    var scxWebSocket = new WebSocketClient().webSocketHandshakeRequest().uri("ws://localhost:8080/websocket").upgrade();
                     sleep(1000);
                     scxWebSocket.sendClose();
                 } catch (Exception _) {
@@ -52,7 +52,7 @@ public class WebSocketServerTest {
                 number.addAndGet(1);
                 // 使用执行器
 //                 var scxEventWebSocket = ScxEventWebSocket.of(wsRequest.webSocket(), Executors.newVirtualThreadPerTaskExecutor());
-                var scxEventWebSocket = ScxEventWebSocket.of(wsRequest.webSocket());
+                var scxEventWebSocket = ScxEventWebSocket.of(wsRequest.upgrade());
                 var s = randomString(10);
                 eventWebSockets.add(s);
                 scxEventWebSocket.onClose((code, reason) -> {

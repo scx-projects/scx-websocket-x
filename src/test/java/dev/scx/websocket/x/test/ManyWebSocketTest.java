@@ -2,9 +2,9 @@ package dev.scx.websocket.x.test;
 
 import dev.scx.http.x.HttpServer;
 import dev.scx.http.x.HttpServerOptions;
-import dev.scx.websocket.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.WebSocketOpCode;
 import dev.scx.websocket.event.ScxEventWebSocket;
+import dev.scx.websocket.handshake.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.x.WebSocketClient;
 import dev.scx.websocket.x.WebSocketUpgradeRequestFactory;
 
@@ -27,7 +27,7 @@ public class ManyWebSocketTest {
 
         httpServer.onRequest(req -> {
             if (req instanceof ScxServerWebSocketHandshakeRequest wsReq) {
-                var webSocket = wsReq.webSocket();
+                var webSocket = wsReq.upgrade();
                 //可以以这种 偏底层的方式使用
                 while (true) {
                     var frame = webSocket.readFrame();
@@ -50,7 +50,7 @@ public class ManyWebSocketTest {
     public static void startClient() {
         var httpClient = new WebSocketClient();
 
-        var webSocket = httpClient.webSocketHandshakeRequest().uri("ws://127.0.0.1:8080/websocket").webSocket();
+        var webSocket = httpClient.webSocketHandshakeRequest().uri("ws://127.0.0.1:8080/websocket").upgrade();
 
         //这里只有当 onConnect 走完才会 执行 来自客户端请求的监听 所以这里 创建线程发送 不阻塞 onConnect
         Thread.ofVirtual().start(() -> {

@@ -6,6 +6,7 @@ import dev.scx.http.x.http1.headers.Http1Headers;
 import dev.scx.http.x.http1.headers.upgrade.ScxUpgrade;
 import dev.scx.http.x.http1.request_line.Http1RequestLine;
 import dev.scx.io.ByteInput;
+import dev.scx.websocket.x.handshake.Http1ServerWebSocketHandshakeRequest;
 
 import static dev.scx.http.x.http1.headers.upgrade.Upgrade.WEB_SOCKET;
 
