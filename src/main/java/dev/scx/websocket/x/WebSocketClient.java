@@ -2,8 +2,9 @@ package dev.scx.websocket.x;
 
 import dev.scx.http.x.HttpClient;
 import dev.scx.http.x.HttpClientRequest;
-import dev.scx.websocket.ScxClientWebSocketHandshakeRequest;
 import dev.scx.websocket.ScxWebSocketClient;
+import dev.scx.websocket.handshake.ScxClientWebSocketHandshakeRequest;
+import dev.scx.websocket.x.handshake.Http1ClientWebSocketHandshakeRequest;
 
 /// WebSocketClient
 ///

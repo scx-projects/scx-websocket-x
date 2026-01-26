@@ -4,7 +4,7 @@ import dev.scx.io.ByteInput;
 import dev.scx.io.ByteOutput;
 import dev.scx.io.exception.*;
 import dev.scx.websocket.WebSocketOpCode;
-import dev.scx.websocket.exception.WebSocketParseException;
+import dev.scx.websocket.exception.WebSocketException;
 
 import java.util.ArrayList;
 
@@ -78,18 +78,18 @@ public class WebSocketProtocolFrameHelper {
     }
 
     //读取单个帧
-    public static WebSocketProtocolFrame readFrame(ByteInput byteInput, long maxWebSocketFrameSize) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketParseException {
+    public static WebSocketProtocolFrame readFrame(ByteInput byteInput, long maxWebSocketFrameSize) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketException {
         var webSocketFrame = readFrameHeader(byteInput);
 
         //这里检查 最大帧大小
         if (webSocketFrame.payloadLength() > maxWebSocketFrameSize) {
-            throw new WebSocketParseException(TOO_BIG.code(), "Frame too big");
+            throw new WebSocketException(TOO_BIG.code()+ "Frame too big");
         }
 
         return readFramePayload(webSocketFrame, byteInput);
     }
 
-    public static WebSocketProtocolFrame readFrameUntilLast(ByteInput byteInput, long maxWebSocketFrameSize, long maxWebSocketMessageSize) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketParseException {
+    public static WebSocketProtocolFrame readFrameUntilLast(ByteInput byteInput, long maxWebSocketFrameSize, long maxWebSocketMessageSize) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketException {
         var frameList = new ArrayList<WebSocketProtocolFrame>();
         long totalPayloadLength = 0;
 
@@ -99,12 +99,12 @@ public class WebSocketProtocolFrameHelper {
 
             // 检查单个帧大小限制
             if (framePayloadLength > maxWebSocketFrameSize) {
-                throw new WebSocketParseException(TOO_BIG.code(), "Frame too big");
+                throw new WebSocketException(TOO_BIG.code()+ "Frame too big");
             }
 
             // 检查合并后的消息大小限制
             if (totalPayloadLength + framePayloadLength > maxWebSocketMessageSize) {
-                throw new WebSocketParseException(TOO_BIG.code(), "Message too big");
+                throw new WebSocketException(TOO_BIG.code()+ "Message too big");
             }
 
             webSocketFrame = readFramePayload(webSocketFrame, byteInput);

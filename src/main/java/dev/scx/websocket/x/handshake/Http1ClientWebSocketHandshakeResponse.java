@@ -1,4 +1,4 @@
-package dev.scx.websocket.x;
+package dev.scx.websocket.x.handshake;
 
 import dev.scx.http.headers.ScxHttpHeaders;
 import dev.scx.http.peer_info.PeerInfo;
@@ -6,8 +6,11 @@ import dev.scx.http.status_code.ScxHttpStatusCode;
 import dev.scx.http.version.HttpVersion;
 import dev.scx.http.x.http1.Http1ClientResponse;
 import dev.scx.io.ByteInput;
-import dev.scx.websocket.ScxClientWebSocketHandshakeResponse;
 import dev.scx.websocket.ScxWebSocket;
+import dev.scx.websocket.handshake.ScxClientWebSocketHandshakeRejectedException;
+import dev.scx.websocket.handshake.ScxClientWebSocketHandshakeResponse;
+import dev.scx.websocket.x.WebSocket;
+import dev.scx.websocket.x.WebSocketOptions;
 
 import static dev.scx.http.status_code.HttpStatusCode.SWITCHING_PROTOCOLS;
 import static dev.scx.http.version.HttpVersion.HTTP_1_1;
@@ -29,15 +32,15 @@ public class Http1ClientWebSocketHandshakeResponse implements ScxClientWebSocket
 
     // todo 校验不完整 正常应该 校验 头中的 secWebsocketKey
     @Override
-    public boolean handshakeSucceeded() {
+    public boolean handshakeAccepted() {
         return SWITCHING_PROTOCOLS == _response.statusCode();
     }
 
     @Override
-    public ScxWebSocket webSocket() {
+    public ScxWebSocket upgrade() throws ScxClientWebSocketHandshakeRejectedException {
         if (webSocket == null) {
-            if (!handshakeSucceeded()) {
-                throw new RuntimeException("Unexpected response status: " + _response.statusCode());
+            if (!handshakeAccepted()) {
+                throw new ScxClientWebSocketHandshakeRejectedException("Unexpected response status: " + _response.statusCode());
             }
             webSocket = new WebSocket(_response.connection.socketIO,  webSocketOptions, true);
         }

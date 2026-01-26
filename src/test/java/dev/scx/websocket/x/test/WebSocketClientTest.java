@@ -2,9 +2,9 @@ package dev.scx.websocket.x.test;
 
 import dev.scx.http.x.HttpServer;
 import dev.scx.http.x.HttpServerOptions;
-import dev.scx.websocket.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.event.ScxEventWebSocket;
-import dev.scx.websocket.exception.WebsocketAlreadySentCloseException;
+import dev.scx.websocket.exception.WebSocketException;
+import dev.scx.websocket.handshake.ScxServerWebSocketHandshakeRequest;
 import dev.scx.websocket.x.WebSocketClient;
 import dev.scx.websocket.x.WebSocketUpgradeRequestFactory;
 import org.testng.annotations.Test;
@@ -13,17 +13,17 @@ import java.io.IOException;
 
 public class WebSocketClientTest {
 
-    public static void main(String[] args) throws IOException, WebsocketAlreadySentCloseException {
+    public static void main(String[] args) throws IOException, WebSocketException {
         test1();
     }
 
     @Test
-    public static void test1() throws IOException, WebsocketAlreadySentCloseException {
+    public static void test1() throws IOException, WebSocketException {
         startServer();
         var webSocket = new WebSocketClient().webSocketHandshakeRequest()
             .uri("http://localhost:8899/中文路径😎😎😎😎?a=1&b=llll")
             .addHeader("a", "b")
-            .webSocket();
+            .upgrade();
 
         System.out.println("连接成功");
         webSocket.send("测试数据");
@@ -36,8 +36,8 @@ public class WebSocketClientTest {
             //通过 c 的类型判断是不是 websocket 连接
             if (c instanceof ScxServerWebSocketHandshakeRequest w) {
                 System.out.println("这是 websocket handshake");
-                w.webSocket().send("hello");
-                ScxEventWebSocket.of(w.webSocket()).onTextMessage((s, _) -> {
+                w.upgrade().send("hello");
+                ScxEventWebSocket.of(w.upgrade()).onTextMessage((s, _) -> {
                     System.out.println("收到消息 :" + s);
                 }).start();
 

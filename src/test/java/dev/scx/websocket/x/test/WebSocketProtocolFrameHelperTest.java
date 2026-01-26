@@ -3,7 +3,7 @@ package dev.scx.websocket.x.test;
 import dev.scx.io.exception.NoMoreDataException;
 import dev.scx.io.output.ByteArrayByteOutput;
 import dev.scx.websocket.WebSocketOpCode;
-import dev.scx.websocket.exception.WebSocketParseException;
+import dev.scx.websocket.exception.WebSocketException;
 import dev.scx.websocket.x.WebSocketProtocolFrame;
 import dev.scx.websocket.x.WebSocketProtocolFrameHelper;
 import org.testng.annotations.Test;
@@ -13,14 +13,14 @@ import static org.testng.Assert.*;
 
 public class WebSocketProtocolFrameHelperTest {
 
-    public static void main(String[] args) throws NoMoreDataException, WebSocketParseException {
+    public static void main(String[] args) throws NoMoreDataException,  WebSocketException {
         testReadFrame();
         testWriteFrame();
         testReadFrameUntilLast();
     }
 
     @Test
-    public static void testReadFrame() throws NoMoreDataException, WebSocketParseException {
+    public static void testReadFrame() throws NoMoreDataException, WebSocketException {
         byte[] frameData = {
             (byte) 0b1000_0001, // FIN + Text frame
             (byte) 0b0000_0101, // No mask, payload length = 5
@@ -53,7 +53,7 @@ public class WebSocketProtocolFrameHelperTest {
     }
 
     @Test
-    public static void testReadFrameUntilLast() throws NoMoreDataException, WebSocketParseException {
+    public static void testReadFrameUntilLast() throws NoMoreDataException, WebSocketException {
         byte[] frameData = {
             (byte) 0b0000_0001, // Text frame, not final
             (byte) 0b0000_0011, // No mask, payload length = 3
