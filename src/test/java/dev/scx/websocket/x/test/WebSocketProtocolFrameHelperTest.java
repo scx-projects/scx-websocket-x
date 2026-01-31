@@ -13,7 +13,7 @@ import static org.testng.Assert.*;
 
 public class WebSocketProtocolFrameHelperTest {
 
-    public static void main(String[] args) throws NoMoreDataException,  WebSocketException {
+    public static void main(String[] args) throws NoMoreDataException, WebSocketException {
         testReadFrame();
         testWriteFrame();
         testReadFrameUntilLast();

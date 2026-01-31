@@ -59,7 +59,7 @@ public class ManyWebSocketTest {
                     webSocket.send(i + "😀😀😀😀😀😀".repeat(100));
                 }
                 webSocket.sendClose();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

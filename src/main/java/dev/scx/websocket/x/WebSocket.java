@@ -48,7 +48,7 @@ public class WebSocket implements ScxWebSocket {
             }
             return WebSocketFrame.of(protocolFrame.opCode(), protocolFrame.payloadData(), protocolFrame.fin());
         } catch (NoMoreDataException e) {
-            throw new WebSocketException(NORMAL_CLOSE.code()+ NORMAL_CLOSE.reason());
+            throw new WebSocketException(NORMAL_CLOSE.code() + NORMAL_CLOSE.reason());
         }
     }
 
