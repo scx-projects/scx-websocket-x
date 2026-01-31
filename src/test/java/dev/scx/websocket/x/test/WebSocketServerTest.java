@@ -68,7 +68,7 @@ public class WebSocketServerTest {
                 scxEventWebSocket.start();
             } else {
                 System.out.println("收到 普通 请求 !!!");
-                c.response().send("number  : " + number.get()+" \r\nclients : \r\n"+
+                c.response().send("number  : " + number.get() + " \r\nclients : \r\n" +
                     String.join("\r\n", eventWebSockets)
                 );
             }

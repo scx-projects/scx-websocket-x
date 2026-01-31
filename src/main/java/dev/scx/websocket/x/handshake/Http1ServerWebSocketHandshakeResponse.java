@@ -22,7 +22,7 @@ import static dev.scx.websocket.x.handshake.WebSocketHandshakeHelper.generateSec
 ///
 /// @author scx567888
 /// @version 0.0.1
-public class Http1ServerWebSocketHandshakeResponse  implements ScxServerWebSocketHandshakeResponse {
+public class Http1ServerWebSocketHandshakeResponse implements ScxServerWebSocketHandshakeResponse {
 
     private final WebSocketOptions webSocketOptions;
     private final Http1ServerWebSocketHandshakeRequest request;

@@ -83,7 +83,7 @@ public class WebSocketProtocolFrameHelper {
 
         //这里检查 最大帧大小
         if (webSocketFrame.payloadLength() > maxWebSocketFrameSize) {
-            throw new WebSocketException(TOO_BIG.code()+ "Frame too big");
+            throw new WebSocketException(TOO_BIG.code() + "Frame too big");
         }
 
         return readFramePayload(webSocketFrame, byteInput);
@@ -99,12 +99,12 @@ public class WebSocketProtocolFrameHelper {
 
             // 检查单个帧大小限制
             if (framePayloadLength > maxWebSocketFrameSize) {
-                throw new WebSocketException(TOO_BIG.code()+ "Frame too big");
+                throw new WebSocketException(TOO_BIG.code() + "Frame too big");
             }
 
             // 检查合并后的消息大小限制
             if (totalPayloadLength + framePayloadLength > maxWebSocketMessageSize) {
-                throw new WebSocketException(TOO_BIG.code()+ "Message too big");
+                throw new WebSocketException(TOO_BIG.code() + "Message too big");
             }
 
             webSocketFrame = readFramePayload(webSocketFrame, byteInput);

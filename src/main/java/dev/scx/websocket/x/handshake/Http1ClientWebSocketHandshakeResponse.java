@@ -42,7 +42,7 @@ public class Http1ClientWebSocketHandshakeResponse implements ScxClientWebSocket
             if (!handshakeAccepted()) {
                 throw new ScxClientWebSocketHandshakeRejectedException("Unexpected response status: " + _response.statusCode());
             }
-            webSocket = new WebSocket(_response.connection.socketIO,  webSocketOptions, true);
+            webSocket = new WebSocket(_response.connection.socketIO, webSocketOptions, true);
         }
         return webSocket;
     }
