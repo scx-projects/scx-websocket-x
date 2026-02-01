@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>scx-websocket-x</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <packaging>jar</packaging>
 
     <name>SCX WebSocket X</name>
@@ -99,8 +99,8 @@
 
     <properties>
 
-        <scx-websocket.version>0.0.8</scx-websocket.version>
-        <scx-http-x.version>0.1.1</scx-http-x.version>
+        <scx-websocket.version>0.0.9</scx-websocket.version>
+        <scx-http-x.version>0.1.2</scx-http-x.version>
         <scx-digest.version>0.0.1</scx-digest.version>
 
         <!-- *********************** 以下为依赖包版本 *********************** -->
