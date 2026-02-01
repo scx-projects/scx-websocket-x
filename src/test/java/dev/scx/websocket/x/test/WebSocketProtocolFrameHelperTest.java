@@ -1,7 +1,7 @@
 package dev.scx.websocket.x.test;
 
 import dev.scx.io.exception.NoMoreDataException;
-import dev.scx.io.output.LazyByteArrayByteOutput;
+import dev.scx.io.output.ByteArrayByteOutput;
 import dev.scx.websocket.WebSocketOpCode;
 import dev.scx.websocket.exception.WebSocketException;
 import dev.scx.websocket.x.WebSocketProtocolFrame;
@@ -42,7 +42,7 @@ public class WebSocketProtocolFrameHelperTest {
     @Test
     public static void testWriteFrame() {
         var frame = WebSocketProtocolFrame.of(true, WebSocketOpCode.TEXT, new byte[]{'H', 'e', 'l', 'l', 'o'});
-        var out = new LazyByteArrayByteOutput();
+        var out = new ByteArrayByteOutput();
         WebSocketProtocolFrameHelper.writeFrame(frame, out);
         byte[] expectedFrame = {
             (byte) 0b1000_0001, // FIN + Text frame
