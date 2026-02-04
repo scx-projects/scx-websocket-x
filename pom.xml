@@ -99,7 +99,7 @@
 
     <properties>
 
-        <scx-websocket.version>0.0.10</scx-websocket.version>
+        <scx-websocket.version>0.1.0</scx-websocket.version>
         <scx-http-x.version>0.2.0</scx-http-x.version>
         <scx-digest.version>0.0.1</scx-digest.version>
 
