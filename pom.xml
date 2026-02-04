@@ -100,7 +100,7 @@
     <properties>
 
         <scx-websocket.version>0.0.9</scx-websocket.version>
-        <scx-http-x.version>0.1.2</scx-http-x.version>
+        <scx-http-x.version>0.1.3</scx-http-x.version>
         <scx-digest.version>0.0.1</scx-digest.version>
 
         <!-- *********************** 以下为依赖包版本 *********************** -->
