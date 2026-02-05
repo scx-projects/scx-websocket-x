@@ -1,12 +1,11 @@
 package dev.scx.websocket.x;
 
+import dev.scx.io.ByteChunk;
 import dev.scx.io.ByteInput;
 import dev.scx.io.ByteOutput;
 import dev.scx.io.exception.*;
 import dev.scx.websocket.WebSocketOpCode;
 import dev.scx.websocket.exception.WebSocketException;
-
-import static dev.scx.websocket.close_info.WebSocketCloseInfo.TOO_BIG;
 
 /// WebSocketProtocolFrameHelper
 ///
@@ -90,42 +89,59 @@ public final class WebSocketProtocolFrameHelper {
     }
 
     public static void writeProtocolFrame(WebSocketProtocolFrame frame, ByteOutput byteOutput) throws ScxOutputException, OutputAlreadyClosedException {
+        // 创建 header 防止频繁写入底层.
+        byte[] header = new byte[14];
+
         // 头部
-        int fullOpCode = (frame.fin() ? 0b1000_0000 : 0) |
-            (frame.rsv1() ? 0b0100_0000 : 0) |
-            (frame.rsv2() ? 0b0010_0000 : 0) |
-            (frame.rsv3() ? 0b0001_0000 : 0) |
-            frame.opCode().code();
+        header[0] = (byte) ((frame.fin ? 0b1000_0000 : 0) |
+                    (frame.rsv1 ? 0b0100_0000 : 0) |
+                    (frame.rsv2 ? 0b0010_0000 : 0) |
+                    (frame.rsv3 ? 0b0001_0000 : 0) |
+                    frame.opCode.code());
 
-        //写入头部
-        byteOutput.write((byte) fullOpCode);
+        long length = frame.payloadLength;
+        var masked = frame.masked ? 0b1000_0000 : 0;
 
-        var length = frame.payloadLength();
-        var masked = frame.masked() ? 0b1000_0000 : 0;
-
+        var s = 0;
         if (length < 126L) {
-            byteOutput.write((byte) (length | masked));
+            header[1] = (byte) (length | masked);
+            s = 1;
         } else if (length < 65536L) {
-            byteOutput.write((byte) (126 | masked));
-            byteOutput.write((byte) ((length >>> 8) & 0b1111_1111));
-            byteOutput.write((byte) (length & 0b1111_1111));
+            header[1] = (byte) (126 | masked);
+            header[2] = (byte) (length >>> 8 & 0b1111_1111);
+            header[3] = (byte) (length & 0b1111_1111);
+            s = 3;
         } else {
-            byteOutput.write((byte) (127 | masked));
-            for (int i = 56; i >= 0; i -= 8) {
-                byteOutput.write((byte) ((length >>> i) & 0b1111_1111));
-            }
+            header[1] = (byte) (127 | masked);
+            header[2] = (byte) (length >>> 56 & 0b1111_1111);
+            header[3] = (byte) (length >>> 48 & 0b1111_1111);
+            header[4] = (byte) (length >>> 40 & 0b1111_1111);
+            header[5] = (byte) (length >>> 32 & 0b1111_1111);
+            header[6] = (byte) (length >>> 24 & 0b1111_1111);
+            header[7] = (byte) (length >>> 16 & 0b1111_1111);
+            header[8] = (byte) (length >>> 8 & 0b1111_1111);
+            header[9] = (byte) (length & 0b1111_1111);
+            s = 9;
         }
 
-        // 写入掩码键（如果有）
-        if (frame.masked()) {
-            byte[] maskingKey = frame.maskingKey();
-            byteOutput.write(maskingKey);
+        // 写入掩码键 (如果有)
+        if (frame.masked) {
+            byte[] maskingKey = frame.maskingKey;
+            header[s + 1] = maskingKey[0];
+            header[s + 2] = maskingKey[1];
+            header[s + 3] = maskingKey[2];
+            header[s + 4] = maskingKey[3];
+            s = s + 4;
         }
 
-        // 处理掩码（如果有）
-        byte[] payloadData = frame.payloadData();
-        byte[] maskingKey = frame.maskingKey();
-        if (frame.masked()) {
+        // 写出头.
+        byteOutput.write(ByteChunk.of(header, 0, s));
+
+        // 处理掩码 (如果有)
+        byte[] payloadData = frame.payloadData;
+        byte[] maskingKey = frame.maskingKey;
+        // 此处为了性能我们就地更改数组.
+        if (frame.masked) {
             for (int i = 0; i < payloadData.length; i = i + 1) {
                 payloadData[i] = (byte) (payloadData[i] ^ maskingKey[i % 4]);
             }
