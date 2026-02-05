@@ -4,10 +4,14 @@ import dev.scx.websocket.WebSocketFrame;
 
 import static dev.scx.random.ScxRandom.randomBytes;
 
+/// WebSocketHelper
+///
+/// @author scx567888
+/// @version 0.0.1
 public final class WebSocketHelper {
 
-    // 注意此处创建的 WebSocketProtocolFrame 中的 payloadData 还没有被掩码计算.
-    public static WebSocketProtocolFrame toProtocolFrame(WebSocketFrame frame,boolean isClient) {
+    /// 注意此处创建的 WebSocketProtocolFrame 中的 payloadData 还没有被掩码计算.
+    public static WebSocketProtocolFrame toProtocolFrame(WebSocketFrame frame, boolean isClient) {
 
         var protocolFrame = new WebSocketProtocolFrame();
         protocolFrame.fin = frame.fin();
