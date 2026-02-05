@@ -15,7 +15,7 @@ final class WebSocketProtocolFrame {
     public boolean rsv3;
     public WebSocketOpCode opCode;
     public boolean masked;
-    public int payloadLength;
+    public long payloadLength;
     public byte[] maskingKey;
     public byte[] payloadData;
 
