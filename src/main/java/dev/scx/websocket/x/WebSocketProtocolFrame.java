@@ -7,7 +7,7 @@ import dev.scx.websocket.WebSocketOpCode;
 /// @author scx567888
 /// @version 0.0.1
 /// @see <a href="https://www.rfc-editor.org/rfc/rfc6455">https://www.rfc-editor.org/rfc/rfc6455</a>
-final class WebSocketProtocolFrame {
+public final class WebSocketProtocolFrame {
 
     public boolean fin;
     public boolean rsv1;

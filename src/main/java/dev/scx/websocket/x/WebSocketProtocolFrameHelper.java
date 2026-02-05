@@ -15,7 +15,7 @@ import static dev.scx.websocket.close_info.WebSocketCloseInfo.TOO_BIG;
 /// @see <a href="https://www.rfc-editor.org/rfc/rfc6455">https://www.rfc-editor.org/rfc/rfc6455</a>
 public final class WebSocketProtocolFrameHelper {
 
-    public static WebSocketProtocolFrame readProtocolFrameHeader(ByteInput byteInput) {
+    private static WebSocketProtocolFrame readProtocolFrameHeader(ByteInput byteInput) throws IllegalArgumentException, NoMoreDataException, ScxInputException, InputAlreadyClosedException {
         var protocolFrame = new WebSocketProtocolFrame();
 
         byte b1 = byteInput.read();
@@ -57,30 +57,33 @@ public final class WebSocketProtocolFrameHelper {
         return protocolFrame;
     }
 
-    public static WebSocketProtocolFrame readProtocolFramePayload(WebSocketProtocolFrame frame, ByteInput byteInput) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException {
-        var payloadLength = frame.payloadLength();
-        var masked = frame.masked();
-        var maskingKey = frame.maskingKey();
+    private static WebSocketProtocolFrame readProtocolFramePayload(WebSocketProtocolFrame frame, ByteInput byteInput) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException {
+        var payloadLength = frame.payloadLength;
+        var masked = frame.masked;
+        var maskingKey = frame.maskingKey;
 
-        var payloadData = byteInput.readFully(payloadLength);
+        // 这里我们假设 payloadLength 小于 int 值. 此处强转.
+        var payloadData = byteInput.readFully((int) payloadLength);
 
         // 掩码计算
         if (masked) {
-            for (int i = 0; i < payloadLength; i = i + 1) {
+            for (int i = 0; i < payloadData.length; i = i + 1) {
                 payloadData[i] = (byte) (payloadData[i] ^ maskingKey[i % 4]);
             }
         }
 
-        return frame.payloadData(payloadData);
+        frame.payloadData = payloadData;
+
+        return frame;
     }
 
     /// 读取单个帧
-    public static WebSocketProtocolFrame readProtocolFrame(ByteInput byteInput, long maxWebSocketFrameSize) throws NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketException {
+    public static WebSocketProtocolFrame readProtocolFrame(ByteInput byteInput, long maxWebSocketFrameSize) throws IllegalArgumentException, NoMoreDataException, ScxInputException, InputAlreadyClosedException, WebSocketException {
         var webSocketFrame = readProtocolFrameHeader(byteInput);
 
-        //这里检查 最大帧大小
-        if (webSocketFrame.payloadLength() > maxWebSocketFrameSize) {
-            throw new WebSocketException(TOO_BIG.code() + "Frame too big");
+        // 这里检查 最大帧大小
+        if (webSocketFrame.payloadLength > maxWebSocketFrameSize) {
+            throw new WebSocketException("Frame too big");
         }
 
         return readProtocolFramePayload(webSocketFrame, byteInput);
