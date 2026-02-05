@@ -88,6 +88,7 @@ public final class WebSocketProtocolFrameHelper {
         return readProtocolFramePayload(webSocketFrame, byteInput);
     }
 
+    /// 注意这里会直接就地 对 frame 进行掩码. 如果上层需要复用 请自行 copy.
     public static void writeProtocolFrame(WebSocketProtocolFrame frame, ByteOutput byteOutput) throws ScxOutputException, OutputAlreadyClosedException {
         // 创建 header 防止频繁写入底层.
         byte[] header = new byte[14];
