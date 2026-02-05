@@ -105,12 +105,12 @@ public final class WebSocketProtocolFrameHelper {
         var s = 0;
         if (length < 126L) {
             header[1] = (byte) (length | masked);
-            s = 1;
+            s = 2;
         } else if (length < 65536L) {
             header[1] = (byte) (126 | masked);
             header[2] = (byte) (length >>> 8 & 0b1111_1111);
             header[3] = (byte) (length & 0b1111_1111);
-            s = 3;
+            s = 4;
         } else {
             header[1] = (byte) (127 | masked);
             header[2] = (byte) (length >>> 56 & 0b1111_1111);
@@ -121,16 +121,16 @@ public final class WebSocketProtocolFrameHelper {
             header[7] = (byte) (length >>> 16 & 0b1111_1111);
             header[8] = (byte) (length >>> 8 & 0b1111_1111);
             header[9] = (byte) (length & 0b1111_1111);
-            s = 9;
+            s = 10;
         }
 
         // 写入掩码键 (如果有)
         if (frame.masked) {
             byte[] maskingKey = frame.maskingKey;
-            header[s + 1] = maskingKey[0];
-            header[s + 2] = maskingKey[1];
-            header[s + 3] = maskingKey[2];
-            header[s + 4] = maskingKey[3];
+            header[s ] = maskingKey[0];
+            header[s + 1] = maskingKey[1];
+            header[s + 2] = maskingKey[2];
+            header[s + 3] = maskingKey[3];
             s = s + 4;
         }
 
