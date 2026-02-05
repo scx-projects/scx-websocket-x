@@ -29,24 +29,23 @@ public final class WebSocketProtocolFrameHelper {
         byte b2 = byteInput.read();
 
         protocolFrame.masked = (b2 & 0b1000_0000) != 0;
-        int payloadLength = b2 & 0b0111_1111;
+        long payloadLength = b2 & 0b0111_1111;
 
         // 读取扩展长度
         if (payloadLength == 126) {
             byte[] extendedPayloadLength = byteInput.readFully(2);
-            payloadLength = (extendedPayloadLength[0] & 0b1111_1111) << 8 |
-                extendedPayloadLength[1] & 0b1111_1111;
+            payloadLength = (extendedPayloadLength[0] & 0b1111_1111L) << 8 |
+                extendedPayloadLength[1] & 0b1111_1111L;
         } else if (payloadLength == 127) {
             byte[] extendedPayloadLength = byteInput.readFully(8);
-            // 我们假定长度都是在 int 范围内的 (理论上不会有 2GB 的文件会通过 websocket 发送)
-            payloadLength = (int) ((extendedPayloadLength[0] & 0b1111_1111L) << 56 |
+            payloadLength = (extendedPayloadLength[0] & 0b1111_1111L) << 56 |
                 (extendedPayloadLength[1] & 0b1111_1111L) << 48 |
                 (extendedPayloadLength[2] & 0b1111_1111L) << 40 |
                 (extendedPayloadLength[3] & 0b1111_1111L) << 32 |
-                (extendedPayloadLength[4] & 0b1111_1111) << 24 |
-                (extendedPayloadLength[5] & 0b1111_1111) << 16 |
-                (extendedPayloadLength[6] & 0b1111_1111) << 8 |
-                extendedPayloadLength[7] & 0b1111_1111);
+                (extendedPayloadLength[4] & 0b1111_1111L) << 24 |
+                (extendedPayloadLength[5] & 0b1111_1111L) << 16 |
+                (extendedPayloadLength[6] & 0b1111_1111L) << 8 |
+                extendedPayloadLength[7] & 0b1111_1111L;
         }
 
         protocolFrame.payloadLength = payloadLength;
