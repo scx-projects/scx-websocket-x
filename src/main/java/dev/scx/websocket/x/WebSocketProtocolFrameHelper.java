@@ -94,10 +94,10 @@ public final class WebSocketProtocolFrameHelper {
 
         // 头部
         header[0] = (byte) ((frame.fin ? 0b1000_0000 : 0) |
-                    (frame.rsv1 ? 0b0100_0000 : 0) |
-                    (frame.rsv2 ? 0b0010_0000 : 0) |
-                    (frame.rsv3 ? 0b0001_0000 : 0) |
-                    frame.opCode.code());
+            (frame.rsv1 ? 0b0100_0000 : 0) |
+            (frame.rsv2 ? 0b0010_0000 : 0) |
+            (frame.rsv3 ? 0b0001_0000 : 0) |
+            frame.opCode.code());
 
         long length = frame.payloadLength;
         var masked = frame.masked ? 0b1000_0000 : 0;
@@ -127,7 +127,7 @@ public final class WebSocketProtocolFrameHelper {
         // 写入掩码键 (如果有)
         if (frame.masked) {
             byte[] maskingKey = frame.maskingKey;
-            header[s ] = maskingKey[0];
+            header[s] = maskingKey[0];
             header[s + 1] = maskingKey[1];
             header[s + 2] = maskingKey[2];
             header[s + 3] = maskingKey[3];
